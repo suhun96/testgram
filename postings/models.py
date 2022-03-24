@@ -1,4 +1,5 @@
 from django.db import models
+from users.models import User
 
 class Post(models.Model):
     user        = models.ForeignKey('users.User', on_delete = models.CASCADE, related_name='posts')    
@@ -10,7 +11,7 @@ class Post(models.Model):
         
 class Image(models.Model):
     post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name='images')
-    Img = models.URLField(max_length=300)
+    img = models.URLField(max_length=300)
     class Meta:
         db_table = "images"
     

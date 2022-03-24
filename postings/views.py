@@ -1,5 +1,4 @@
-import json
-import re
+import json , re
 
 from django.http import JsonResponse
 from django.views import View
@@ -16,16 +15,18 @@ class PostView(View):
             data = json.loads(request.body)
             user = request.user
             
-            contents      = data['contents']
-            img_list     = data['images'].split(',')
+            contents        = data['contents']
+            image_list      = data['images'].split(',')
+            url_check =  "^.*\.(jpg|jpeg|gif|png|bmp|tiff|tga|svg)$"
             
+            for image in image_list:
+                if not re.match(url_check, image):
+                    return JsonResponse({'message' : 'INVALID_IMAGES!!'}, status = 401)
+                
+                
             post_content = Post.objects.create(contents = contents, user = user)
-            
-            for image in img_list:
-                Image.objects.create(
-                    img = image,
-                    post = post_content,
-                )
+            for image in image_list:
+                Image.objects.create(images = image, post = post_content)
             return JsonResponse({'massage':'SUCCESS'}, status = 200)
         except KeyError:
             return JsonResponse({'massage':'KEY_ERROR123'}, status =400)

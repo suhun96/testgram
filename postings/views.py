@@ -3,7 +3,7 @@ import json , re
 from django.http import JsonResponse
 from django.views import View
 
-from postings.models import Post , Image
+from postings.models import Post , Image , Comment
 from users.utils import login_decorator
 from users.views import User
 
@@ -41,3 +41,26 @@ class PostView(View):
         } for post in Post.objects.all()]
         
         return JsonResponse({'data':post_list} , status =200) 
+    
+
+class CommentView(View):
+    @login_decorator
+    def post(self, request):
+        try:
+            data = json.loads(request.body)
+            user = request.user
+            contents = data['contents']
+            post = data['post']
+            
+            
+            Comments = Comment.objects.create(
+                user = user,
+                contents = contents,
+                post = Post.objects.get(id = post)
+            )
+            
+            return JsonResponse({'massage' : Comments.id }, status=200)
+        except KeyError:
+            return JsonResponse({'massage' : 'you cant'} , status = 400)
+        
+        

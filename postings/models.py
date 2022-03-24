@@ -1,5 +1,5 @@
 from django.db import models
-from users.models import User
+
 
 class Post(models.Model):
     user        = models.ForeignKey('users.User', on_delete = models.CASCADE, related_name='posts')    
@@ -15,4 +15,12 @@ class Image(models.Model):
     class Meta:
         db_table = "images"
     
+class Comment(models.Model):
+    user      = models.ForeignKey("users.User", on_delete=models.CASCADE, related_name='user')
+    post      = models.ForeignKey("Post", on_delete=models.CASCADE, related_name='post')
+    contents  = models.CharField(max_length=300, null=True)
+    create_at = models.DateField(auto_now=True)
+    
+    class Meta:
+        db_table = "comments"
     

@@ -11,7 +11,7 @@ class Post(models.Model):
         
 class Image(models.Model):
     post = models.ForeignKey("Post", on_delete=models.CASCADE, related_name='images')
-    img = models.URLField(max_length=300)
+    images = models.URLField(max_length=300)
     class Meta:
         db_table = "images"
     

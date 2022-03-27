@@ -1,3 +1,5 @@
+from unittest.mock import create_autospec
+from venv import create
 from django.db import models
 
 
@@ -23,4 +25,14 @@ class Comment(models.Model):
     
     class Meta:
         db_table = "comments"
+        
+
+class Like(models.Model):
+    user        = models.ForeignKey("users.User", on_delete=models.CASCADE)
+    post        = models.ForeignKey('Post', on_delete=models.CASCADE , related_name="posts")
+    like_or_not = models.BooleanField(null=True)
+    create_at   = models.DateTimeField(auto_now=True)
     
+    class Meta:
+        db_table = "likes"
+

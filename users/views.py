@@ -1,3 +1,4 @@
+from email import message
 import json , re , bcrypt , jwt
 
 from django.http import JsonResponse
@@ -5,7 +6,9 @@ from django.views import View
 
 from django.conf import settings
 
-from .models import User
+from users.utils import login_decorator
+
+from .models import Follow, User
 
 class SignUpView(View):
     def post(self, request):
@@ -39,7 +42,7 @@ class SignUpView(View):
                     )
             return JsonResponse({'message':'SUCCESS'}, status=201)
         except KeyError:
-            return JsonResponse({'message':'KEY_ERROR'}, status=401)
+            return JsonResponse({'message':'KEY_ERROR123123'}, status=401)
 
 
 class SignInView(View):
@@ -61,3 +64,36 @@ class SignInView(View):
  
         except KeyError:
             return JsonResponse({"message": "KEY_ERROR"}, status=401)
+        
+        
+class FollowView(View):
+    @login_decorator
+    def post(self, request):
+        data = json.loads(request.body)
+        user_id = request.user
+        following_id = data['following']
+        try:
+            if not Follow.objects.filter(follow = user_id , following = following_id).exists():
+                if user_id != following_id:
+                    return JsonResponse({'message' : 'self nono!'} , status = 400)
+                Follow.objects.create(
+                follow      = user_id,
+                following   = User.objects.get(id = following_id))
+                
+                return JsonResponse({'message' : 'create!'} , status = 200)
+
+            follow_off = Follow.objects.get(follow = user_id , following = following_id)
+            follow_off.delete()     
+            return JsonResponse({'message' : 'delete!'} , status = 200)
+        except KeyError:
+            return JsonResponse({'message' : 'key error'} , status = 400)
+    
+    @login_decorator    
+    def get(self, requset):
+        user = requset.user
+        following_list = [{
+            'name' : follower.following.name
+        }for follower in Follow.objects.filter(follow = user )]
+        
+        return JsonResponse({'follower_list': following_list} , status =200)
+        

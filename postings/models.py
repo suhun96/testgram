@@ -1,5 +1,3 @@
-from unittest.mock import create_autospec
-from venv import create
 from django.db import models
 
 
